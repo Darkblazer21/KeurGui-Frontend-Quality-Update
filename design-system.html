@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeurGui | Design System & Guidelines</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* --- 1. CORE VARIABLES (THE TRUTH) --- */
+        :root {
+            /* Brand Colors */
+            --primary: #0E3B43;       /* Ocean Dakar */
+            --primary-light: #E0F2F5; /* Backgrounds tints */
+            --accent: #E9A145;        /* Teranga Gold */
+            
+            /* Contextual Colors (Senegal) */
+            --wave: #1DC0F2;
+            --om: #FF7900;
+            
+            /* Neutrals */
+            --bg-body: #F8FAFC;
+            --white: #FFFFFF;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --border: #E2E8F0;
+            
+            /* Feedback */
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+
+            /* Spacing & Layout */
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-full: 999px;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 20px 40px -5px rgba(0,0,0,0.1);
+        }
+
+        /* --- RESET & BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'General Sans', sans-serif; }
+        
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4 { font-family: 'Clash Display', sans-serif; }
+        
+        /* --- SIDEBAR NAV --- */
+        aside {
+            width: 280px;
+            background: var(--primary);
+            color: white;
+            padding: 2rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .ds-logo { font-size: 1.5rem; font-weight: 700; margin-bottom: 3rem; display: block; }
+        .ds-logo span { color: var(--accent); }
+
+        .nav-group { margin-bottom: 2rem; }
+        .nav-title { text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; opacity: 0.6; margin-bottom: 1rem; }
+        .nav-link { display: block; color: white; text-decoration: none; padding: 0.5rem 0; font-size: 0.95rem; opacity: 0.8; transition: 0.2s; }
+        .nav-link:hover { opacity: 1; transform: translateX(5px); }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            margin-left: 280px;
+            flex: 1;
+            padding: 4rem 6rem;
+        }
+
+        section { margin-bottom: 5rem; scroll-margin-top: 4rem; }
+        
+        .section-header { margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+        .section-title { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .section-desc { color: var(--text-light); font-size: 1.1rem; max-width: 600px; }
+
+        /* --- COMPONENT: SWATCHES --- */
+        .color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.5rem; }
+        
+        .swatch {
+            background: white; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        .swatch-color { height: 100px; width: 100%; }
+        .swatch-info { padding: 1rem; }
+        .color-name { font-weight: 700; display: block; margin-bottom: 4px; }
+        .color-hex { font-family: monospace; color: var(--text-light); font-size: 0.9rem; }
+
+        /* --- COMPONENT: TYPOGRAPHY --- */
+        .type-row { display: grid; grid-template-columns: 100px 1fr; gap: 2rem; margin-bottom: 2rem; align-items: baseline; }
+        .type-label { color: var(--text-light); font-family: monospace; }
+        
+        .font-clash { font-family: 'Clash Display'; }
+        .font-general { font-family: 'General Sans'; }
+
+        /* --- COMPONENT: BUTTONS --- */
+        .btn-grid { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+        
+        .btn { padding: 1rem 2rem; border-radius: var(--radius-full); font-weight: 600; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1rem; transition: 0.2s; }
+        .btn:hover { transform: translateY(-2px); }
+        
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-accent { background: var(--accent); color: var(--primary); }
+        .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-main); }
+        .btn-ghost { background: transparent; color: var(--primary); }
+
+        /* --- COMPONENT: FORMS --- */
+        .form-grid { max-width: 500px; display: grid; gap: 1.5rem; }
+        .input-wrapper { display: flex; background: var(--white); border: 2px solid var(--border); border-radius: var(--radius-md); padding: 10px; transition: 0.2s; }
+        .input-wrapper:focus-within { border-color: var(--primary); }
+        .input-demo { border: none; width: 100%; outline: none; font-size: 1rem; }
+
+        /* --- COMPONENT: CARDS --- */
+        .card-demo {
+            background: var(--white); border-radius: var(--radius-lg); padding: 2rem;
+            border: 1px solid var(--border); box-shadow: var(--shadow-md);
+            max-width: 350px; position: relative;
+        }
+
+        /* --- RULES LIST --- */
+        .rules-list { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .rule-card { padding: 1.5rem; border-radius: var(--radius-md); background: white; border-left: 5px solid #ccc; }
+        .rule-do { border-color: var(--success); }
+        .rule-dont { border-color: var(--danger); }
+        .rule-title { font-weight: 700; margin-bottom: 0.5rem; display: block; }
+        
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            aside { display: none; }
+            main { margin-left: 0; padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <aside>
+        <div class="ds-logo">Keur<span>Gui</span>. <br><small style="font-size:0.7rem; color:rgba(255,255,255,0.5); font-family:'General Sans'">Design System v1.0</small></div>
+        
+        <div class="nav-group">
+            <div class="nav-title">Fondations</div>
+            <a href="#brand" class="nav-link">Identité & Mission</a>
+            <a href="#colors" class="nav-link">Couleurs</a>
+            <a href="#typography" class="nav-link">Typographie</a>
+            <a href="#iconography" class="nav-link">Iconographie</a>
+        </div>
+        
+        <div class="nav-group">
+            <div class="nav-title">Composants</div>
+            <a href="#buttons" class="nav-link">Boutons</a>
+            <a href="#forms" class="nav-link">Formulaires</a>
+            <a href="#cards" class="nav-link">Cartes & Ombres</a>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-title">UX Sénégal</div>
+            <a href="#principles" class="nav-link">Principes Clés</a>
+            <a href="#payments" class="nav-link">Paiements Locaux</a>
+        </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main>
+
+        <!-- 1. BRAND -->
+        <section id="brand">
+            <div class="section-header">
+                <h1 class="section-title">Identité de Marque</h1>
+                <p class="section-desc">KeurGui est une plateforme moderne, fiable et locale. Elle allie la rigueur technologique à la chaleur de l'hospitalité sénégalaise (Teranga).</p>
+            </div>
+            <div style="background: white; padding: 3rem; border-radius: var(--radius-lg); text-align: center; border: 1px solid var(--border);">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Flag_of_Senegal.svg/320px-Flag_of_Senegal.svg.png" style="width: 40px; margin-bottom: 1rem; opacity: 0.8;">
+                <h2>"L'immobilier sénégalais, enfin simplifié."</h2>
+            </div>
+        </section>
+
+        <!-- 2. COLORS -->
+        <section id="colors">
+            <div class="section-header">
+                <h2 class="section-title">Palette de Couleurs</h2>
+                <p class="section-desc">Nos couleurs reflètent l'océan atlantique (Confiance) et le soleil (Chaleur). Les couleurs fonctionnelles (Wave/OM) sont sacrées et ne doivent pas être modifiées.</p>
+            </div>
+
+            <h4 style="margin-bottom: 1rem;">Couleurs de Marque</h4>
+            <div class="color-grid" style="margin-bottom: 2rem;">
+                <div class="swatch">
+                    <div class="swatch-color" style="background: var(--primary);"></div>
+                    <div class="swatch-info"><span class="color-name">Ocean Dakar</span><span class="color-hex">#0E3B43</span></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch-color" style="background: var(--accent);"></div>
+                    <div class="swatch-info"><span class="color-name">Teranga Gold</span><span class="color-hex">#E9A145</span></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch-color" style="background: var(--primary-light);"></div>
+                    <div class="swatch-info"><span class="color-name">Soft Ocean</span><span class="color-hex">#E0F2F5</span></div>
+                </div>
+            </div>
+
+            <h4 style="margin-bottom: 1rem;">Contexte Local (Paiement)</h4>
+            <div class="color-grid">
+                <div class="swatch">
+                    <div class="swatch-color" style="background: var(--wave);"></div>
+                    <div class="swatch-info"><span class="color-name">Wave Blue</span><span class="color-hex">#1DC0F2</span></div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch-color" style="background: var(--om);"></div>
+                    <div class="swatch-info"><span class="color-name">Orange Money</span><span class="color-hex">#FF7900</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TYPOGRAPHY -->
+        <section id="typography">
+            <div class="section-header">
+                <h2 class="section-title">Typographie</h2>
+                <p class="section-desc">Nous utilisons <strong>Clash Display</strong> pour les titres (caractère fort, moderne) et <strong>General Sans</strong> pour le texte (lisibilité optimale sur mobile).</p>
+            </div>
+
+            <div style="background: white; padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border);">
+                <div class="type-row">
+                    <span class="type-label">H1 Display</span>
+                    <h1 class="font-clash" style="font-size: 3rem;">Gérez vos biens.</h1>
+                </div>
+                <div class="type-row">
+                    <span class="type-label">H2 Title</span>
+                    <h2 class="font-clash" style="font-size: 2rem;">Appartement F4 Almadies</h2>
+                </div>
+                <div class="type-row">
+                    <span class="type-label">H3 Subtitle</span>
+                    <h3 class="font-clash" style="font-size: 1.5rem;">Détails du paiement</h3>
+                </div>
+                <div class="type-row">
+                    <span class="type-label">Body</span>
+                    <p class="font-general" style="font-size: 1rem; line-height: 1.6; max-width: 500px;">
+                        Voici un exemple de paragraphe standard. Il est utilisé pour les descriptions d'appartements et les instructions. La lisibilité est la priorité numéro un.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. BUTTONS -->
+        <section id="buttons">
+            <div class="section-header">
+                <h2 class="section-title">Boutons & Interactions</h2>
+                <p class="section-desc">Nos boutons sont arrondis (Pill shape) pour une apparence amicale et moderne. Les ombres apparaissent au survol.</p>
+            </div>
+
+            <div class="btn-grid">
+                <button class="btn btn-primary">Action Principale</button>
+                <button class="btn btn-accent">Action Secondaire</button>
+                <button class="btn btn-outline">Bouton Neutre</button>
+                <button class="btn btn-ghost"><i class="ph ph-arrow-left"></i> Lien simple</button>
+            </div>
+        </section>
+
+        <!-- 5. CARDS & SHADOWS -->
+        <section id="cards">
+            <div class="section-header">
+                <h2 class="section-title">Cartes & Ombres</h2>
+                <p class="section-desc">KeurGui utilise un design "Card-Based". Tout contenu important vit dans une carte blanche avec des bordures arrondies.</p>
+            </div>
+
+            <div style="display: flex; gap: 2rem; background: #F1F5F9; padding: 3rem; border-radius: var(--radius-lg);">
+                <!-- Card Example -->
+                <div class="card-demo">
+                    <h4 style="margin-bottom: 0.5rem;">Carte Standard</h4>
+                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                        Border-radius: 24px.<br>
+                        Shadow: Soft Drop Shadow.<br>
+                        Border: 1px solid #E2E8F0.
+                    </p>
+                    <button class="btn btn-primary" style="width: 100%;">Action</button>
+                </div>
+
+                <!-- Input Example -->
+                <div class="form-grid" style="flex:1;">
+                    <div class="input-wrapper">
+                        <input type="text" class="input-demo" placeholder="Input Standard">
+                    </div>
+                    <div class="input-wrapper" style="border-color: var(--primary); background: #F8FAFC;">
+                        <input type="text" class="input-demo" value="Input Actif / Focus">
+                    </div>
+                    <div class="input-wrapper" style="border-color: var(--danger); background: #FEF2F2;">
+                        <input type="text" class="input-demo" value="Input Erreur" style="color: var(--danger);">
+                        <i class="ph ph-warning-circle" style="color: var(--danger);"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. UX PRINCIPLES -->
+        <section id="principles">
+            <div class="section-header">
+                <h2 class="section-title">Principes UX (Contexte Sénégal)</h2>
+                <p class="section-desc">Ces règles ne sont pas esthétiques, elles sont fonctionnelles pour réussir sur le marché local.</p>
+            </div>
+
+            <div class="rules-list">
+                <div class="rule-card rule-do">
+                    <span class="rule-title" style="color: var(--success);">✅ À FAIRE (DO)</span>
+                    <ul style="list-style-position: inside; line-height: 1.6;">
+                        <li>Privilégier le <strong>Numéro de téléphone</strong> (+221) à l'email.</li>
+                        <li>Utiliser les icônes <strong>Wave & Orange Money</strong> officielles.</li>
+                        <li>Afficher le prix en <strong>FCFA</strong> (séparateur point ou espace).</li>
+                        <li>Intégrer <strong>WhatsApp</strong> comme canal de support principal.</li>
+                        <li>Mettre en avant les critères : Groupe Élec, Eau, Sécurité.</li>
+                    </ul>
+                </div>
+
+                <div class="rule-card rule-dont">
+                    <span class="rule-title" style="color: var(--danger);">❌ À ÉVITER (DON'T)</span>
+                    <ul style="list-style-position: inside; line-height: 1.6;">
+                        <li>Ne jamais demander le Code Postal (inutile ici).</li>
+                        <li>Ne pas utiliser de cartes (Google Maps) complexes sans option liste.</li>
+                        <li>Ne pas cacher les frais de service. La transparence est clé.</li>
+                        <li>Éviter les designs trop "sombres" (Dark Mode) par défaut, privilégier la clarté.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>

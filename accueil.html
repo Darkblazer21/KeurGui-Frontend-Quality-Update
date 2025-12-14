@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeurGui | L'Immobilier 3.0 au Sénégal</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES & SETUP --- */
+        :root {
+            --bg-dark: #0E3B43;
+            --bg-light: #F9F7F2;
+            --accent: #E9A145;
+            --text-main: #1a1a1a;
+            --text-light: #F9F7F2;
+            --wave-blue: #1DC0F2;
+            --om-orange: #FF7900;
+            --card-glass: rgba(255, 255, 255, 0.9);
+            --card-border: rgba(255, 255, 255, 0.2);
+            --shadow: 0 20px 40px rgba(0,0,0,0.08);
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'General Sans', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 { font-family: 'Clash Display', sans-serif; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+
+        /* --- UI COMPONENTS --- */
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--bg-dark);
+            color: white;
+        }
+        
+        .btn-accent {
+            background-color: var(--accent);
+            color: var(--bg-dark);
+        }
+
+        .btn:hover { transform: translateY(-2px); }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag-wave { background: rgba(29, 192, 242, 0.1); color: var(--wave-blue); }
+        .tag-om { background: rgba(255, 121, 0, 0.1); color: var(--om-orange); }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            position: absolute;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--bg-dark); }
+        .logo span { color: var(--accent); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 5% 4rem;
+            position: relative;
+            background: linear-gradient(135deg, #F9F7F2 0%, #E8EDF0 100%);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            max-width: 1400px;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--bg-dark);
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+
+        .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+        /* --- PHONE MOCKUP UI (CSS ONLY) --- */
+        .mockup-wrapper {
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .phone-ui {
+            background: white;
+            border-radius: 30px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 8px solid var(--bg-dark);
+            max-width: 380px;
+            margin: 0 auto;
+            transform: rotateY(-10deg) rotateX(5deg);
+            transition: transform 0.5s ease;
+        }
+
+        .mockup-wrapper:hover .phone-ui { transform: rotateY(0) rotateX(0); }
+
+        /* UI INSIDE PHONE */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        .user-avatar { width: 40px; height: 40px; background: #ddd; border-radius: 50%; }
+        
+        .balance-card {
+            background: var(--bg-dark);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+        }
+        .balance-label { font-size: 0.8rem; opacity: 0.8; }
+        .balance-amount { font-size: 2rem; font-weight: 700; font-family: 'Clash Display'; }
+        
+        .prop-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .prop-img {
+            height: 120px;
+            background: url('https://images.unsplash.com/photo-1591825729269-caeb344f6df2?auto=format&fit=crop&q=80&w=400') center/cover;
+            border-radius: 12px;
+            margin-bottom: 0.8rem;
+            position: relative;
+        }
+        .badge-3d {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-paid { background: #E1F5E6; color: #0F5B2E; }
+        .status-late { background: #FDE8E8; color: #9B1C1C; }
+
+        /* --- FEATURES SECTION --- */
+        .features {
+            padding: 5rem 5%;
+            background: var(--bg-dark);
+            color: white;
+        }
+        
+        .section-header { text-align: center; margin-bottom: 4rem; }
+        .section-header h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.05);
+            padding: 2rem;
+            border-radius: var(--radius);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s;
+        }
+        .feature-card:hover { background: rgba(255,255,255,0.1); }
+        
+        .icon-box {
+            width: 50px; height: 50px;
+            background: var(--accent);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        /* --- SEARCH BAR FLOATING --- */
+        .search-float {
+            background: white;
+            padding: 1rem;
+            border-radius: 100px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 1rem;
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 800px;
+            align-items: center;
+        }
+
+        .search-input {
+            border: none;
+            padding: 0.5rem 1rem;
+            flex: 1;
+            outline: none;
+            font-family: inherit;
+        }
+        .search-divider { width: 1px; height: 30px; background: #eee; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 968px) {
+            .hero-grid { grid-template-columns: 1fr; text-align: center; }
+            .hero-actions { justify-content: center; }
+            .search-float { flex-direction: column; border-radius: 20px; position: relative; bottom: 0; margin-top: 3rem; transform: none; left: 0; width: 100%; }
+            .search-divider { width: 100%; height: 1px; }
+            .mockup-wrapper { margin-top: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Keur<span>Gui</span>.</div>
+        <nav>
+            <a href="#" class="btn btn-primary">Connexion</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section class="hero">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <span class="tag tag-wave" style="margin-bottom: 1rem; display:inline-block;">Wave & Orange Money Intégrés</span>
+                    <h1>Gérez vos biens.<br>Trouvez votre toit.<br><span style="color: var(--accent);">Sans stress.</span></h1>
+                    <p>La première plateforme immobilière au Sénégal qui sécurise les paiements, automatise les reçus et offre des visites virtuelles 3D.</p>
+                    
+                    <div class="hero-actions">
+                        <button class="btn btn-primary">Je suis Propriétaire</button>
+                        <button class="btn btn-accent">Je cherche à louer</button>
+                    </div>
+
+                    <!-- Floating Search Simulation -->
+                    <div class="search-float">
+                        <input type="text" class="search-input" placeholder="📍 Dakar, Mbour, Saly...">
+                        <div class="search-divider"></div>
+                        <input type="text" class="search-input" placeholder="🏠 2 Chambres, Salon...">
+                        <div class="search-divider"></div>
+                        <button class="btn btn-primary" style="padding: 0.8rem 1.5rem;">Rechercher</button>
+                    </div>
+                </div>
+
+                <!-- DASHBOARD UI MOCKUP -->
+                <div class="mockup-wrapper">
+                    <div class="phone-ui">
+                        <div class="app-header">
+                            <div>
+                                <small style="color: #666">Bonjour,</small>
+                                <h4>Moussa Diop</h4>
+                            </div>
+                            <div class="user-avatar"></div>
+                        </div>
+
+                        <!-- Admin View: Finances -->
+                        <div class="balance-card">
+                            <div class="balance-label">Loyers encaissés (Mars)</div>
+                            <div class="balance-amount">850.000 FCFA</div>
+                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                                <span class="tag tag-wave">Wave</span>
+                                <span class="tag tag-om">Orange Money</span>
+                            </div>
+                        </div>
+
+                        <!-- Listing View with 3D & Status -->
+                        <h5 style="margin-bottom: 10px;">Vos Propriétés</h5>
+                        
+                        <div class="prop-card">
+                            <div class="prop-img">
+                                <span class="badge-3d">👁️ Visite 3D</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h5 style="font-size: 1rem;">Appt. Almadies</h5>
+                                    <small style="color:#666">Locataire: A. Fall</small>
+                                </div>
+                                <span class="status-pill status-paid">Payé ✅</span>
+                            </div>
+                        </div>
+
+                        <div class="prop-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h5 style="font-size: 1rem;">Villa Saly</h5>
+                                    <small style="color:#666">En attente de paiement</small>
+                                </div>
+                                <span class="status-pill status-late">Retard ⚠️</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURES SECTION -->
+        <section class="features">
+            <div class="section-header">
+                <h2>Une solution complète</h2>
+                <p style="opacity: 0.7;">Conçue pour les réalités du marché sénégalais.</p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card">
+                    <div class="icon-box">💸</div>
+                    <h3>Paiements Mobiles</h3>
+                    <p style="margin-top: 10px; opacity: 0.8; font-size: 0.9rem;">
+                        Intégration native de Wave et Orange Money. Recevez vos loyers instantanément et générez des reçus numériques certifiés.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card">
+                    <div class="icon-box">👓</div>
+                    <h3>Visites Virtuelles 3D</h3>
+                    <p style="margin-top: 10px; opacity: 0.8; font-size: 0.9rem;">
+                        Plus de déplacements inutiles. Visitez l'intérieur des appartements en 3D immersive depuis votre smartphone avant de réserver.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card">
+                    <div class="icon-box">🔔</div>
+                    <h3>Gestion Automatisée</h3>
+                    <p style="margin-top: 10px; opacity: 0.8; font-size: 0.9rem;">
+                        Rappels automatiques d'échéance par SMS/Notif. Tableau de bord financier et historique des locataires (bons/mauvais payeurs).
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

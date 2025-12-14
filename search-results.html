@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche - KeurGui</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --primary: #0E3B43;
+            --accent: #E9A145;
+            --bg: #FFFFFF;
+            --bg-secondary: #F8FAFC;
+            --text: #1E293B;
+            --text-light: #64748B;
+            --border: #E2E8F0;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'General Sans', sans-serif; }
+        
+        body { background-color: var(--bg); color: var(--text); }
+        
+        /* --- HEADER & SEARCH BAR --- */
+        header {
+            position: sticky; top: 0; z-index: 50;
+            background: var(--bg); border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .logo { font-family: 'Clash Display'; font-weight: 700; font-size: 1.5rem; color: var(--primary); margin-right: 2rem; }
+        .logo span { color: var(--accent); }
+
+        /* COMPACT SEARCH BAR IN HEADER */
+        .search-compact {
+            display: flex; align-items: center;
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: 50px; padding: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            flex: 1; max-width: 600px;
+        }
+        
+        .search-divider { width: 1px; height: 24px; background: var(--border); margin: 0 1rem; }
+        
+        .search-field { border: none; background: transparent; padding: 0.5rem; outline: none; font-size: 0.9rem; font-weight: 500; color: var(--text); width: 100%; }
+        .search-btn-round { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; flex-shrink: 0; transition: 0.2s; }
+        .search-btn-round:hover { transform: scale(1.05); }
+
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; margin-left: 2rem; }
+        .nav-link { text-decoration: none; color: var(--text); font-weight: 500; font-size: 0.9rem; }
+
+        /* --- LAYOUT GRID --- */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr; /* Filters | Results */
+            min-height: calc(100vh - 80px);
+        }
+
+        /* --- FILTERS SIDEBAR --- */
+        .filters-sidebar {
+            padding: 2rem;
+            border-right: 1px solid var(--border);
+            position: sticky; top: 80px; height: calc(100vh - 80px);
+            overflow-y: auto;
+            background: var(--bg);
+        }
+
+        .filter-section { margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+        .filter-section:last-child { border: none; }
+        
+        .filter-title { font-weight: 600; margin-bottom: 1rem; display: block; font-size: 0.95rem; }
+
+        /* CHECKBOXES */
+        .checkbox-group { display: flex; flex-direction: column; gap: 0.8rem; }
+        .custom-check { display: flex; align-items: center; gap: 0.8rem; cursor: pointer; font-size: 0.9rem; color: var(--text-light); }
+        .custom-check input { accent-color: var(--primary); width: 16px; height: 16px; }
+        .custom-check:hover { color: var(--text); }
+
+        /* PRICE RANGE SLIDER (Simulation) */
+        .range-track { height: 4px; background: var(--border); border-radius: 4px; position: relative; margin: 2rem 0 1rem; }
+        .range-fill { position: absolute; left: 10%; width: 60%; height: 100%; background: var(--primary); border-radius: 4px; }
+        .range-thumb { width: 20px; height: 20px; background: white; border: 2px solid var(--primary); border-radius: 50%; position: absolute; top: 50%; transform: translateY(-50%); cursor: grab; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .thumb-1 { left: 10%; } .thumb-2 { left: 70%; }
+        
+        .price-inputs { display: flex; gap: 1rem; align-items: center; }
+        .price-box { border: 1px solid var(--border); padding: 0.5rem; border-radius: 8px; width: 100%; text-align: center; font-size: 0.9rem; }
+
+        /* --- RESULTS GRID --- */
+        .results-area {
+            padding: 2rem;
+            background: var(--bg-secondary);
+        }
+
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .results-count { font-weight: 700; color: var(--text); }
+
+        .listing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        /* --- LISTING CARD --- */
+        .listing-card {
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid transparent;
+            transition: 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .listing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: var(--border);
+        }
+
+        .card-img-wrapper {
+            position: relative;
+            height: 220px;
+            background: #eee;
+        }
+        
+        .card-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .card-badges { position: absolute; top: 1rem; left: 1rem; display: flex; gap: 0.5rem; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; backdrop-filter: blur(4px); }
+        .badge-new { background: rgba(255,255,255,0.9); color: var(--primary); }
+        .badge-3d { background: rgba(14, 59, 67, 0.8); color: var(--accent); display: flex; align-items: center; gap: 4px; }
+
+        .fav-btn {
+            position: absolute; top: 1rem; right: 1rem;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(0,0,0,0.2); color: white;
+            display: flex; align-items: center; justify-content: center;
+            border: none; cursor: pointer; transition: 0.2s;
+        }
+        .fav-btn:hover { background: white; color: #EF4444; }
+
+        .card-content { padding: 1.2rem; }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
+        .card-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-loc { font-size: 0.9rem; color: var(--text-light); display: flex; align-items: center; gap: 4px; }
+
+        .amenities-row { display: flex; gap: 1rem; margin: 1rem 0; color: var(--text-light); font-size: 0.85rem; }
+        .amenity-item { display: flex; align-items: center; gap: 4px; }
+
+        .card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #f1f1f1; }
+        .price { font-family: 'Clash Display'; font-weight: 700; font-size: 1.2rem; color: var(--primary); }
+        .period { font-size: 0.8rem; font-weight: 400; color: var(--text-light); font-family: 'General Sans'; }
+
+        /* FLOATING MAP TOGGLE */
+        .map-toggle-float {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--text); color: white;
+            padding: 0.8rem 1.5rem; border-radius: 50px;
+            font-weight: 600; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            display: flex; align-items: center; gap: 0.5rem; cursor: pointer; transition: 0.2s; z-index: 100;
+        }
+        .map-toggle-float:hover { transform: translateX(-50%) scale(1.05); }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .filters-sidebar { display: none; } /* Hide filters on mobile initially */
+            .search-compact { max-width: 100%; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">Keur<span>Gui</span>.</div>
+        
+        <!-- SEARCH BAR -->
+        <div class="search-compact">
+            <input type="text" class="search-field" placeholder="📍 Dakar, Almadies..." value="Almadies">
+            <div class="search-divider"></div>
+            <input type="text" class="search-field" placeholder="🏠 Type de bien" style="width: 120px;">
+            <button class="search-btn-round"><i class="ph ph-magnifying-glass"></i></button>
+        </div>
+
+        <nav class="nav-links">
+            <a href="#" class="nav-link">Favoris</a>
+            <a href="#" class="nav-link">Connexion</a>
+        </nav>
+    </header>
+
+    <div class="main-layout">
+        
+        <!-- SIDEBAR FILTERS -->
+        <aside class="filters-sidebar">
+            <div class="filter-section">
+                <span class="filter-title">Budget (Mensuel)</span>
+                <div class="range-track">
+                    <div class="range-fill"></div>
+                    <div class="range-thumb thumb-1"></div>
+                    <div class="range-thumb thumb-2"></div>
+                </div>
+                <div class="price-inputs">
+                    <div class="price-box">100k</div>
+                    <span style="color:var(--text-light);">-</span>
+                    <div class="price-box">800k</div>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <span class="filter-title">Confort Technique (Sénégal)</span>
+                <div class="checkbox-group">
+                    <label class="custom-check">
+                        <input type="checkbox" checked>
+                        <span>Groupe Électrogène</span>
+                    </label>
+                    <label class="custom-check">
+                        <input type="checkbox" checked>
+                        <span>Surpresseur d'eau</span>
+                    </label>
+                    <label class="custom-check">
+                        <input type="checkbox">
+                        <span>Fibre Optique</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <span class="filter-title">Type de bien</span>
+                <div class="checkbox-group">
+                    <label class="custom-check"><input type="checkbox" checked> Appartement</label>
+                    <label class="custom-check"><input type="checkbox"> Villa / Maison</label>
+                    <label class="custom-check"><input type="checkbox"> Studio</label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <span class="filter-title">Commodités</span>
+                <div class="checkbox-group">
+                    <label class="custom-check"><input type="checkbox"> Meublé</label>
+                    <label class="custom-check"><input type="checkbox"> Gardien 24/7</label>
+                    <label class="custom-check"><input type="checkbox"> Piscine</label>
+                </div>
+            </div>
+        </aside>
+
+        <!-- RESULTS GRID -->
+        <section class="results-area">
+            <div class="results-header">
+                <span class="results-count">32 résultats trouvés</span>
+                <div style="display:flex; gap:0.5rem; align-items:center; font-size:0.9rem;">
+                    Trier par: 
+                    <select style="border:none; background:transparent; font-weight:600; outline:none;">
+                        <option>Pertinence</option>
+                        <option>Prix croissant</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="listing-grid">
+                
+                <!-- CARD 1 -->
+                <div class="listing-card">
+                    <div class="card-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=400" class="card-img">
+                        <div class="card-badges">
+                            <span class="badge badge-new">Nouveau</span>
+                            <span class="badge badge-3d"><i class="ph ph-cube"></i> 3D</span>
+                        </div>
+                        <button class="fav-btn"><i class="ph ph-heart"></i></button>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Appt. Standing Almadies</div>
+                                <div class="card-loc"><i class="ph ph-map-pin"></i> Almadies, Zone 12</div>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:2px; font-size:0.8rem; font-weight:600;">
+                                <i class="ph ph-star-fill" style="color:#E9A145;"></i> 4.8
+                            </div>
+                        </div>
+                        
+                        <div class="amenities-row">
+                            <div class="amenity-item" title="Groupe Electrogène"><i class="ph ph-lightning"></i> Groupe</div>
+                            <div class="amenity-item"><i class="ph ph-bed"></i> 3 Ch.</div>
+                            <div class="amenity-item"><i class="ph ph-shower"></i> 2 Sdb.</div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="price">450.000 F <span class="period">/mois</span></div>
+                            <span style="font-size:0.75rem; color:#10B981; font-weight:600; background:#ECFDF5; padding:2px 6px; border-radius:4px;">Dispo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 2 -->
+                <div class="listing-card">
+                    <div class="card-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400" class="card-img">
+                        <button class="fav-btn"><i class="ph ph-heart"></i></button>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Villa Blanche Saly</div>
+                                <div class="card-loc"><i class="ph ph-map-pin"></i> Saly Portudal</div>
+                            </div>
+                        </div>
+                        
+                        <div class="amenities-row">
+                            <div class="amenity-item"><i class="ph ph-swimming-pool"></i> Piscine</div>
+                            <div class="amenity-item"><i class="ph ph-bed"></i> 4 Ch.</div>
+                            <div class="amenity-item"><i class="ph ph-wifi-high"></i> Fibre</div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="price">800.000 F <span class="period">/mois</span></div>
+                            <span style="font-size:0.75rem; color:#64748B;">Charges incluses</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 3 -->
+                <div class="listing-card">
+                    <div class="card-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1536376072261-38c75010e6c9?q=80&w=400" class="card-img">
+                        <div class="card-badges">
+                            <span class="badge badge-3d"><i class="ph ph-cube"></i> 3D</span>
+                        </div>
+                        <button class="fav-btn"><i class="ph ph-heart"></i></button>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Studio Meublé Plateau</div>
+                                <div class="card-loc"><i class="ph ph-map-pin"></i> Dakar Plateau</div>
+                            </div>
+                        </div>
+                        
+                        <div class="amenities-row">
+                            <div class="amenity-item"><i class="ph ph-shield-check"></i> Gardien</div>
+                            <div class="amenity-item"><i class="ph ph-armchair"></i> Meublé</div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="price">300.000 F <span class="period">/mois</span></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <!-- MAP TOGGLE BUTTON -->
+    <div class="map-toggle-float">
+        <i class="ph ph-map-trifold"></i> Carte
+    </div>
+
+</body>
+</html>

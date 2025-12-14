@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeurGui | Standards Techniques</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+    <!-- Font Mono for Code -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* --- THEME TECHNIQUE (DARK MODE INSPIRED) --- */
+        :root {
+            --bg-dark: #0F172A;
+            --bg-panel: #1E293B;
+            --text-main: #E2E8F0;
+            --text-muted: #94A3B8;
+            --accent: #38BDF8; /* Sky Blue for Tech */
+            --code-bg: #0B1120;
+            --border: #334155;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'General Sans', sans-serif;
+            display: flex;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* --- SIDEBAR --- */
+        aside {
+            width: 300px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            padding: 2rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .tech-logo { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+        .tech-logo span { color: var(--accent); }
+        .version { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px; }
+
+        .nav-section { margin-top: 2rem; }
+        .nav-header { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 700; margin-bottom: 1rem; }
+        .nav-link { display: flex; align-items: center; gap: 10px; color: var(--text-main); text-decoration: none; padding: 0.6rem 0; font-size: 0.95rem; transition: 0.2s; opacity: 0.8; }
+        .nav-link:hover { opacity: 1; color: var(--accent); transform: translateX(5px); }
+        .nav-link i { font-size: 1.1rem; }
+
+        /* --- CONTENT --- */
+        main {
+            margin-left: 300px;
+            padding: 4rem 6rem;
+            max-width: 1200px;
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; letter-spacing: -1px; }
+        h2 { font-size: 1.8rem; margin: 3rem 0 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); color: var(--accent); }
+        h3 { font-size: 1.3rem; margin: 2rem 0 1rem; }
+        p { color: #CBD5E1; margin-bottom: 1.5rem; max-width: 70ch; }
+        
+        strong { color: white; font-weight: 600; }
+
+        /* --- CODE BLOCKS --- */
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            color: #E2E8F0;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .code-tag { color: #F472B6; } /* Pink */
+        .code-attr { color: #A78BFA; } /* Purple */
+        .code-val { color: #38BDF8; } /* Blue */
+        .code-comment { color: #64748B; font-style: italic; }
+
+        /* --- CONCEPTS GRID --- */
+        .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .concept-card { background: var(--bg-panel); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); }
+        .concept-title { font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .concept-icon { color: var(--accent); }
+
+        /* --- RESPONSIVE TAG --- */
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; margin-right: 10px; }
+        .tag-mobile { background: rgba(56, 189, 248, 0.2); color: #38BDF8; }
+        .tag-desktop { background: rgba(16, 185, 129, 0.2); color: #10B981; }
+
+        /* --- DO'S AND DON'TS --- */
+        .practice-list li {
+            list-style: none; padding-left: 1.5rem; position: relative; margin-bottom: 0.8rem; color: #CBD5E1;
+        }
+        .practice-good li::before { content: '✓'; position: absolute; left: 0; color: var(--success); font-weight: bold; }
+        .practice-bad li::before { content: '✕'; position: absolute; left: 0; color: var(--error); font-weight: bold; }
+
+        @media (max-width: 1024px) {
+            aside { display: none; }
+            main { margin-left: 0; padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="tech-logo">Keur<span>Gui</span>.Tech</div>
+        <div class="version">Build v1.0 • HTML5/CSS3</div>
+
+        <div class="nav-section">
+            <div class="nav-header">Architecture</div>
+            <a href="#philosophy" class="nav-link"><i class="ph ph-lightbulb"></i> Philosophie</a>
+            <a href="#mobile-first" class="nav-link"><i class="ph ph-device-mobile"></i> Mobile First</a>
+            <a href="#css-vars" class="nav-link"><i class="ph ph-paint-brush"></i> Variables CSS</a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-header">Layout & Rendu</div>
+            <a href="#grid-flex" class="nav-link"><i class="ph ph-columns"></i> Grid vs Flexbox</a>
+            <a href="#typography" class="nav-link"><i class="ph ph-text-aa"></i> Fluid Typography</a>
+            <a href="#performance" class="nav-link"><i class="ph ph-lightning"></i> Performance</a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-header">Qualité Code</div>
+            <a href="#clean-code" class="nav-link"><i class="ph ph-check-circle"></i> Bonnes Pratiques</a>
+        </div>
+    </aside>
+
+    <main>
+        <div style="margin-bottom: 4rem;">
+            <h1>Standards Techniques</h1>
+            <p style="font-size: 1.2rem; color: var(--text-muted);">
+                Ce document détaille les principes d'ingénierie front-end utilisés pour KeurGui. L'objectif est un code léger, performant sur les réseaux 3G/4G, et maintenable sans framework lourd.
+            </p>
+        </div>
+
+        <!-- 1. PHILOSOPHIE -->
+        <section id="philosophy">
+            <h2>1. Philosophie "Vanilla First"</h2>
+            <p>Nous n'utilisons pas de Bootstrap, Tailwind ou Bulma par défaut. Pourquoi ?</p>
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="concept-title"><i class="ph ph-gauge concept-icon"></i> Performance</div>
+                    <p style="font-size: 0.9rem; margin-bottom: 0;">Le CSS généré est ultra-léger (< 50kb). Essentiel pour le chargement mobile au Sénégal.</p>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title"><i class="ph ph-wrench concept-icon"></i> Maintenabilité</div>
+                    <p style="font-size: 0.9rem; margin-bottom: 0;">Pas de dépendance externe cachée. Un développeur junior avec des bases HTML/CSS peut tout comprendre.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. MOBILE FIRST -->
+        <section id="mobile-first">
+            <h2>2. Stratégie Mobile First</h2>
+            <p>C'est la règle d'or. Nous écrivons le CSS pour le mobile <strong>par défaut</strong>, puis nous ajoutons des règles pour les écrans plus larges.</p>
+            
+            <h3>L'approche technique (Media Queries)</h3>
+            <p>On utilise <code>min-width</code> et jamais <code>max-width</code> pour la structure.</p>
+
+            <div class="code-block">
+                <span class="code-comment">/* ❌ MAUVAISE PRATIQUE (Desktop First) */</span><br>
+                .card { width: 50%; } <span class="code-comment">/* On pense PC d'abord */</span><br>
+                @media (max-width: 768px) { .card { width: 100%; } } <span class="code-comment">/* Puis on surcharge pour mobile */</span><br><br>
+
+                <span class="code-comment">/* ✅ BONNE PRATIQUE (Mobile First - KeurGui Standard) */</span><br>
+                .card { width: 100%; } <span class="code-comment">/* Par défaut, c'est pour mobile (léger) */</span><br>
+                @media (min-width: 768px) { .card { width: 50%; } } <span class="code-comment">/* On adapte si l'écran est grand */</span>
+            </div>
+        </section>
+
+        <!-- 3. CSS VARIABLES -->
+        <section id="css-vars">
+            <h2>3. Variables CSS (Custom Properties)</h2>
+            <p>Nous utilisons <code>:root</code> pour définir les tokens de design. Cela permet de changer le thème (ex: Dark Mode) instantanément sans toucher au HTML.</p>
+
+            <div class="code-block">
+                :root {<br>
+                &nbsp;&nbsp;<span class="code-attr">--primary</span>: <span class="code-val">#0E3B43</span>;<br>
+                &nbsp;&nbsp;<span class="code-attr">--radius</span>: <span class="code-val">16px</span>;<br>
+                &nbsp;&nbsp;<span class="code-attr">--spacing-unit</span>: <span class="code-val">1rem</span>;<br>
+                }<br><br>
+                .btn {<br>
+                &nbsp;&nbsp;background-color: var(<span class="code-attr">--primary</span>);<br>
+                &nbsp;&nbsp;border-radius: var(<span class="code-attr">--radius</span>);<br>
+                }
+            </div>
+        </section>
+
+        <!-- 4. GRID & FLEXBOX -->
+        <section id="grid-flex">
+            <h2>4. Layout : Grid vs Flexbox</h2>
+            <p>Nous ne flippons pas de pièces. Chaque outil a son usage strict dans le projet.</p>
+            
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="concept-title"><i class="ph ph-columns concept-icon"></i> CSS Grid</div>
+                    <p style="font-size: 0.9rem;">Utilisé pour la <strong>structure globale</strong> de la page (Sidebar + Main) et les grilles 2D (Galerie photos, Liste de cartes).</p>
+                    <code style="background:rgba(0,0,0,0.3); padding:2px 5px;">display: grid;</code>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title"><i class="ph ph-arrows-left-right concept-icon"></i> Flexbox</div>
+                    <p style="font-size: 0.9rem;">Utilisé pour l'<strong>alignement 1D</strong> à l'intérieur des composants (Boutons avec icônes, Navbar, Badges).</p>
+                    <code style="background:rgba(0,0,0,0.3); padding:2px 5px;">display: flex;</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. FLUID TYPOGRAPHY -->
+        <section id="typography">
+            <h2>5. Typographie Fluide (Clamp)</h2>
+            <p>Plutôt que d'écrire 5 media queries pour changer la taille de police, nous utilisons la fonction mathématique <code>clamp()</code>.</p>
+            
+            <div class="code-block">
+                <span class="code-comment">/* La police fera minimum 2rem, idéalement 5% de l'écran, maximum 4rem */</span><br>
+                h1 {<br>
+                &nbsp;&nbsp;font-size: clamp(<span class="code-val">2rem</span>, <span class="code-val">5vw</span>, <span class="code-val">4rem</span>);<br>
+                }
+            </div>
+            <p>Cela garantit que les titres sont toujours lisibles, que ce soit sur un iPhone SE ou un écran 4K.</p>
+        </section>
+
+        <!-- 6. CLEAN CODE -->
+        <section id="clean-code">
+            <h2>6. Bonnes Pratiques Code</h2>
+            <div class="concept-grid">
+                <div class="concept-card practice-good">
+                    <div class="concept-title" style="color:var(--success)">À Faire (Do)</div>
+                    <ul class="practice-list">
+                        <li>Utiliser HTML5 sémantique (<code>&lt;nav&gt;</code>, <code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>).</li>
+                        <li>Utiliser <code>rem</code> pour les tailles de police et marges (accessibilité).</li>
+                        <li>Nommer les classes en Anglais (standard mondial).</li>
+                        <li>Commenter les hacks CSS complexes.</li>
+                    </ul>
+                </div>
+                <div class="concept-card practice-bad">
+                    <div class="concept-title" style="color:var(--error)">À Ne Pas Faire (Don't)</div>
+                    <ul class="practice-list">
+                        <li>Ne jamais utiliser <code>!important</code> (sauf cas de force majeure).</li>
+                        <li>Ne pas utiliser de styles inline (<code>style="..."</code>) dans le HTML.</li>
+                        <li>Ne pas utiliser <code>height</code> fixe sur des conteneurs de texte (ça casse si le texte est traduit).</li>
+                        <li>Ne pas utiliser <code>px</code> pour les polices.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>

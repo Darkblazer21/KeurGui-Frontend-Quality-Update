@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signalement - KeurGui</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --bg: #F8FAFC;
+            --white: #FFFFFF;
+            --primary: #0E3B43;
+            --accent: #E9A145;
+            --text: #1E293B;
+            --text-light: #64748B;
+            --border: #E2E8F0;
+            --danger: #EF4444;
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'General Sans', sans-serif; }
+        
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        /* --- CONTAINER --- */
+        .ticket-container {
+            background: var(--white);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -5px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 2rem 2rem 3rem; /* Extra padding for overlap */
+            position: relative;
+        }
+        
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .close-btn { background: rgba(255,255,255,0.2); border: none; width: 32px; height: 32px; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .close-btn:hover { background: rgba(255,255,255,0.3); }
+
+        h1 { font-family: 'Clash Display'; font-size: 1.5rem; }
+        .subtitle { opacity: 0.8; font-size: 0.9rem; margin-top: 0.5rem; }
+
+        /* --- FORM BODY --- */
+        .form-body {
+            padding: 2rem;
+            margin-top: -2rem; /* Overlap header */
+            background: var(--white);
+            border-radius: 24px 24px 0 0;
+            position: relative;
+        }
+
+        /* CATEGORY GRID */
+        .label { font-weight: 600; margin-bottom: 0.8rem; display: block; font-size: 0.95rem; }
+        
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .cat-card {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+        }
+        .cat-card input { position: absolute; opacity: 0; width: 0; height: 0; }
+        
+        .cat-icon { font-size: 1.8rem; margin-bottom: 0.5rem; color: var(--text-light); display: block; }
+        .cat-name { font-size: 0.8rem; font-weight: 600; color: var(--text-light); }
+
+        /* Checked State */
+        .cat-card:has(input:checked) { border-color: var(--primary); background: #E0F2F5; }
+        .cat-card:has(input:checked) .cat-icon { color: var(--primary); }
+        .cat-card:has(input:checked) .cat-name { color: var(--primary); }
+
+        /* URGENCY TOGGLE */
+        .urgency-wrapper {
+            background: #F1F5F9;
+            padding: 4px;
+            border-radius: 12px;
+            display: flex;
+            margin-bottom: 2rem;
+        }
+        .urgency-option {
+            flex: 1;
+            text-align: center;
+            padding: 0.6rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            color: var(--text-light);
+            transition: 0.2s;
+        }
+        .urgency-option.active { background: white; color: var(--text); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .urgency-option.active.high { color: var(--danger); background: #FEF2F2; }
+
+        /* DESCRIPTION & VOICE */
+        .input-group { position: relative; margin-bottom: 2rem; }
+        
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            padding-right: 3rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            min-height: 120px;
+            resize: vertical;
+            outline: none;
+            background: #F8FAFC;
+        }
+        textarea:focus { border-color: var(--primary); background: white; }
+
+        .voice-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            width: 36px; height: 36px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(14, 59, 67, 0.3);
+            transition: 0.2s;
+        }
+        .voice-btn:hover { transform: scale(1.1); }
+
+        /* PHOTO UPLOAD */
+        .photo-upload {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+        
+        .upload-btn-square {
+            width: 80px; height: 80px;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--text-light);
+            cursor: pointer;
+            flex-shrink: 0;
+            background: #F8FAFC;
+        }
+        .upload-btn-square:hover { border-color: var(--primary); color: var(--primary); }
+
+        .preview-img {
+            width: 80px; height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            position: relative;
+        }
+        .remove-img {
+            position: absolute; top: -5px; right: -5px;
+            width: 20px; height: 20px; background: var(--danger); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer;
+        }
+
+        /* FOOTER */
+        .footer-action { padding: 1rem 2rem 2rem; border-top: 1px solid var(--border); background: var(--white); text-align: center; }
+        .btn-submit {
+            width: 100%; padding: 1rem; border-radius: 50px; background: var(--primary); color: white;
+            font-weight: 600; font-size: 1rem; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem; transition: 0.2s;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(14, 59, 67, 0.2); }
+
+    </style>
+</head>
+<body>
+
+    <div class="ticket-container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-top">
+                <div style="font-size: 0.8rem; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px;">Appt. Mamelles</div>
+                <button class="close-btn"><i class="ph ph-x"></i></button>
+            </div>
+            <h1>Un problème ?</h1>
+            <p class="subtitle">Dites-nous ce qui ne va pas. Nous informerons le propriétaire immédiatement.</p>
+        </div>
+
+        <!-- FORM -->
+        <div class="form-body">
+            
+            <!-- 1. CATEGORY -->
+            <label class="label">Quel est le problème ?</label>
+            <div class="cat-grid">
+                <label class="cat-card">
+                    <input type="radio" name="cat" checked>
+                    <i class="ph ph-drop cat-icon"></i>
+                    <span class="cat-name">Plomberie</span>
+                </label>
+                <label class="cat-card">
+                    <input type="radio" name="cat">
+                    <i class="ph ph-lightning cat-icon"></i>
+                    <span class="cat-name">Électricité</span>
+                </label>
+                <label class="cat-card">
+                    <input type="radio" name="cat">
+                    <i class="ph ph-snowflake cat-icon"></i>
+                    <span class="cat-name">Clim / Froid</span>
+                </label>
+                <label class="cat-card">
+                    <input type="radio" name="cat">
+                    <i class="ph ph-lock-key cat-icon"></i>
+                    <span class="cat-name">Serrure</span>
+                </label>
+                <label class="cat-card">
+                    <input type="radio" name="cat">
+                    <i class="ph ph-wifi-high cat-icon"></i>
+                    <span class="cat-name">Internet</span>
+                </label>
+                <label class="cat-card">
+                    <input type="radio" name="cat">
+                    <i class="ph ph-dots-three-circle cat-icon"></i>
+                    <span class="cat-name">Autre</span>
+                </label>
+            </div>
+
+            <!-- 2. URGENCY -->
+            <label class="label">Urgence</label>
+            <div class="urgency-wrapper">
+                <div class="urgency-option active" onclick="setUrgency(this, 'low')">Faible</div>
+                <div class="urgency-option" onclick="setUrgency(this, 'med')">Moyenne</div>
+                <div class="urgency-option" onclick="setUrgency(this, 'high')">Critique 🚨</div>
+            </div>
+
+            <!-- 3. DESCRIPTION & VOICE -->
+            <label class="label">Description</label>
+            <div class="input-group">
+                <textarea placeholder="Décrivez le problème en quelques mots..."></textarea>
+                <div class="voice-btn" title="Enregistrer un vocal">
+                    <i class="ph ph-microphone"></i>
+                </div>
+            </div>
+
+            <!-- 4. PHOTOS -->
+            <label class="label">Photos (Recommandé)</label>
+            <div class="photo-upload">
+                <div class="upload-btn-square">
+                    <i class="ph ph-camera" style="font-size: 1.5rem; margin-bottom: 5px;"></i>
+                    <span style="font-size: 0.7rem;">Ajouter</span>
+                </div>
+                
+                <!-- Simulated Uploaded Image -->
+                <div style="position: relative;">
+                    <img src="https://images.unsplash.com/photo-1585909695277-5bbf2f0529dc?q=80&w=150" class="preview-img">
+                    <div class="remove-img"><i class="ph ph-x"></i></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer-action">
+            <button class="btn-submit">
+                Envoyer le signalement <i class="ph ph-paper-plane-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Simple script for urgency toggle
+        function setUrgency(element, level) {
+            // Remove active class from all
+            document.querySelectorAll('.urgency-option').forEach(el => {
+                el.classList.remove('active', 'high');
+            });
+            
+            // Add active class
+            element.classList.add('active');
+            
+            // Special styling for high urgency
+            if(level === 'high') {
+                element.classList.add('high');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un Bien - KeurGui</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --primary: #0E3B43;
+            --accent: #E9A145;
+            --bg: #F8FAFC;
+            --white: #FFFFFF;
+            --text: #1E293B;
+            --border: #E2E8F0;
+            --active-input: #0E3B43;
+            --step-inactive: #CBD5E1;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'General Sans', sans-serif; }
+        
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        /* --- HEADER --- */
+        .header-nav { width: 100%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .logo { font-family: 'Clash Display'; font-weight: 700; font-size: 1.5rem; color: var(--primary); }
+        .cancel-btn { color: #64748B; font-weight: 500; cursor: pointer; text-decoration: none; }
+
+        /* --- WIZARD CONTAINER --- */
+        .wizard-container {
+            background: var(--white);
+            width: 100%;
+            max-width: 800px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -5px rgba(0,0,0,0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- PROGRESS BAR --- */
+        .progress-header { padding: 2rem 3rem 0; }
+        
+        .steps-indicator {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .steps-indicator::before {
+            content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px;
+            background: var(--border); z-index: 1; transform: translateY(-50%);
+        }
+
+        .step-bubble {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 2px solid var(--step-inactive);
+            color: var(--step-inactive);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 0.9rem;
+            position: relative; z-index: 2;
+            transition: 0.3s;
+        }
+
+        .step-bubble.active { border-color: var(--primary); color: var(--primary); background: #E0F2F5; }
+        .step-bubble.completed { background: var(--primary); border-color: var(--primary); color: white; }
+
+        /* --- FORM CONTENT --- */
+        .step-content {
+            padding: 1rem 3rem 3rem;
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.4s ease;
+        }
+        .step-content.active-step { display: block; }
+
+        h2 { font-family: 'Clash Display'; font-size: 2rem; margin-bottom: 0.5rem; color: var(--primary); }
+        .subtitle { color: #64748B; margin-bottom: 2.5rem; display: block; }
+
+        /* INPUT STYLES */
+        .form-group { margin-bottom: 1.5rem; }
+        .label { display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        
+        .input-field {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.2s;
+        }
+        .input-field:focus { border-color: var(--primary); background: #F8FAFC; }
+
+        /* CUSTOM SELECT CARDS (Radio replacement) */
+        .grid-select { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
+        
+        .select-card {
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.2s;
+            position: relative;
+        }
+        
+        .select-card input { position: absolute; opacity: 0; width: 0; height: 0; }
+        .select-card:hover { border-color: #CBD5E1; }
+        
+        .select-card:has(input:checked) {
+            border-color: var(--primary);
+            background-color: #F0FDF4;
+            color: var(--primary);
+        }
+        .select-card i { font-size: 2rem; margin-bottom: 0.5rem; display: block; color: #64748B; }
+        .select-card:has(input:checked) i { color: var(--primary); }
+
+        /* COUNTER INPUTS */
+        .counter-wrapper {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 1rem;
+        }
+        .counter-controls { display: flex; align-items: center; gap: 1rem; }
+        .btn-count {
+            width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border);
+            background: white; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .count-val { font-weight: 700; font-size: 1.1rem; width: 20px; text-align: center; }
+
+        /* AMENITIES PILLS */
+        .amenities-grid { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+        .amenity-checkbox input { position: absolute; opacity: 0; }
+        .amenity-pill {
+            padding: 0.6rem 1.2rem; border-radius: 50px; border: 1px solid var(--border);
+            cursor: pointer; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;
+            transition: 0.2s;
+        }
+        .amenity-checkbox input:checked + .amenity-pill {
+            background: var(--primary); color: white; border-color: var(--primary);
+        }
+
+        /* UPLOAD ZONE */
+        .upload-zone {
+            border: 2px dashed var(--border); border-radius: 16px;
+            padding: 3rem; text-align: center; cursor: pointer; transition: 0.2s; background: #F8FAFC;
+        }
+        .upload-zone:hover { border-color: var(--primary); background: #F1F5F9; }
+
+        /* --- FOOTER ACTIONS --- */
+        .wizard-footer {
+            padding: 1.5rem 3rem;
+            border-top: 1px solid var(--border);
+            display: flex; justify-content: space-between;
+            align-items: center;
+            background: var(--white);
+        }
+
+        .btn {
+            padding: 1rem 2rem; border-radius: 50px; font-weight: 600; cursor: pointer; border: none; font-size: 1rem; transition: 0.2s;
+        }
+        .btn-secondary { background: transparent; color: var(--text); }
+        .btn-secondary:hover { background: #F1F5F9; }
+        
+        .btn-primary { background: var(--primary); color: white; display: flex; align-items: center; gap: 0.5rem; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(14, 59, 67, 0.2); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            .progress-header, .step-content, .wizard-footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+            .grid-select { grid-template-columns: 1fr 1fr; }
+            h2 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="header-nav">
+        <div class="logo">Keur<span>Gui</span>.</div>
+        <a href="#" class="cancel-btn">Annuler</a>
+    </nav>
+
+    <div class="wizard-container">
+        <!-- PROGRESS -->
+        <div class="progress-header">
+            <div class="steps-indicator">
+                <div class="step-bubble active" id="bubble-1">1</div>
+                <div class="step-bubble" id="bubble-2">2</div>
+                <div class="step-bubble" id="bubble-3">3</div>
+                <div class="step-bubble" id="bubble-4">4</div>
+            </div>
+        </div>
+
+        <form id="propertyForm">
+            
+            <!-- STEP 1: TYPE & LOCATION -->
+            <div class="step-content active-step" id="step-1">
+                <h2>Commençons par l'essentiel</h2>
+                <span class="subtitle">Quel type de bien souhaitez-vous louer ?</span>
+
+                <div class="form-group">
+                    <label class="label">Type de propriété</label>
+                    <div class="grid-select">
+                        <label class="select-card">
+                            <input type="radio" name="type" checked>
+                            <i class="ph ph-buildings"></i>
+                            <span>Appartement</span>
+                        </label>
+                        <label class="select-card">
+                            <input type="radio" name="type">
+                            <i class="ph ph-house-line"></i>
+                            <span>Maison / Villa</span>
+                        </label>
+                        <label class="select-card">
+                            <input type="radio" name="type">
+                            <i class="ph ph-storefront"></i>
+                            <span>Commerce</span>
+                        </label>
+                        <label class="select-card">
+                            <input type="radio" name="type">
+                            <i class="ph ph-briefcase"></i>
+                            <span>Bureau</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label">Localisation (Ville, Quartier)</label>
+                    <div style="position: relative;">
+                        <i class="ph ph-map-pin" style="position: absolute; left: 15px; top: 15px; color: #999;"></i>
+                        <input type="text" class="input-field" style="padding-left: 45px;" placeholder="Ex: Mermoz, Dakar">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label">Adresse exacte (Masquée avant visite)</label>
+                    <input type="text" class="input-field" placeholder="Ex: Rue MZ-54, Porte 12">
+                </div>
+            </div>
+
+            <!-- STEP 2: DETAILS -->
+            <div class="step-content" id="step-2">
+                <h2>Détails et Confort</h2>
+                <span class="subtitle">Décrivez les atouts de votre bien.</span>
+
+                <div class="form-group">
+                    <div class="counter-wrapper">
+                        <span>Chambres</span>
+                        <div class="counter-controls">
+                            <div class="btn-count">-</div>
+                            <span class="count-val">2</span>
+                            <div class="btn-count">+</div>
+                        </div>
+                    </div>
+                    <div class="counter-wrapper">
+                        <span>Salles de bain</span>
+                        <div class="counter-controls">
+                            <div class="btn-count">-</div>
+                            <span class="count-val">1</span>
+                            <div class="btn-count">+</div>
+                        </div>
+                    </div>
+                    <div class="counter-wrapper">
+                        <span>Superficie (m²)</span>
+                        <input type="number" value="85" style="width: 80px; padding: 5px; border: 1px solid #ddd; border-radius: 8px; text-align: center;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label">Équipements & Commodités (Crucial)</label>
+                    <div class="amenities-grid">
+                        <label class="amenity-checkbox">
+                            <input type="checkbox" checked>
+                            <span class="amenity-pill"><i class="ph ph-wifi-high"></i> Fibre Optique</span>
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox" checked>
+                            <span class="amenity-pill"><i class="ph ph-lightning"></i> Groupe Électrogène</span>
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox">
+                            <span class="amenity-pill"><i class="ph ph-drop"></i> Surpresseur d'eau</span>
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox">
+                            <span class="amenity-pill"><i class="ph ph-snowflake"></i> Climatisation</span>
+                        </label>
+                        <label class="amenity-checkbox">
+                            <input type="checkbox">
+                            <span class="amenity-pill"><i class="ph ph-shield-check"></i> Gardiennage</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: MEDIA -->
+            <div class="step-content" id="step-3">
+                <h2>Photos & Visite 3D</h2>
+                <span class="subtitle">Les annonces avec 3D reçoivent 3x plus de visites.</span>
+
+                <div class="upload-zone">
+                    <i class="ph ph-image" style="font-size: 3rem; color: var(--primary); opacity: 0.5;"></i>
+                    <h4 style="margin: 1rem 0;">Glissez vos photos ici</h4>
+                    <p style="font-size: 0.9rem; color: #666;">ou cliquez pour parcourir (Max 10 photos)</p>
+                    <button type="button" class="btn" style="background: #E2E8F0; margin-top: 1rem; font-size: 0.9rem;">Sélectionner les fichiers</button>
+                </div>
+
+                <div style="margin-top: 2rem; background: #FFF7ED; border: 1px solid #FFEDD5; padding: 1.5rem; border-radius: 12px; display: flex; gap: 1rem; align-items: start;">
+                    <i class="ph ph-cube-transparent" style="font-size: 2rem; color: var(--accent);"></i>
+                    <div>
+                        <h4 style="color: #9A3412; margin-bottom: 0.5rem;">Ajouter une visite 3D ?</h4>
+                        <p style="font-size: 0.9rem; color: #7C2D12; margin-bottom: 1rem;">Utilisez notre scanner intégré ou uploadez un fichier Matterport.</p>
+                        <button type="button" style="background: white; border: 1px solid #FED7AA; color: #C2410C; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">Lancer le Scanner</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: FINANCE -->
+            <div class="step-content" id="step-4">
+                <h2>Loyer & Conditions</h2>
+                <span class="subtitle">Définissez vos attentes financières.</span>
+
+                <div class="form-group">
+                    <label class="label">Loyer Mensuel (FCFA)</label>
+                    <input type="number" class="input-field" placeholder="Ex: 350000" style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">
+                </div>
+
+                <div class="grid-select" style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
+                    <div>
+                        <label class="label">Caution (Mois)</label>
+                        <select class="input-field">
+                            <option>1 Mois</option>
+                            <option>2 Mois</option>
+                            <option>3 Mois</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label">Avance (Mois)</label>
+                        <select class="input-field">
+                            <option>1 Mois</option>
+                            <option>2 Mois</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label class="amenity-checkbox" style="display: block; margin-bottom: 1rem;">
+                    <input type="checkbox" checked>
+                    <span class="amenity-pill" style="border-radius: 12px; justify-content: space-between;">
+                        <span><i class="ph ph-receipt"></i> Inclure les charges de copropriété ?</span>
+                        <span style="color: #666; font-size: 0.8rem;">+ 25.000 F estimé</span>
+                    </span>
+                </label>
+            </div>
+
+        </form>
+
+        <!-- FOOTER NAV -->
+        <div class="wizard-footer">
+            <button class="btn btn-secondary" id="prevBtn" style="visibility: hidden;">Retour</button>
+            <button class="btn btn-primary" id="nextBtn">
+                Suivant <i class="ph ph-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- SIMPLE JS LOGIC FOR WIZARD -->
+    <script>
+        const steps = 4;
+        let currentStep = 1;
+
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+
+        function updateStep() {
+            // Hide all contents
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active-step'));
+            // Show current
+            document.getElementById(`step-${currentStep}`).classList.add('active-step');
+
+            // Update Bubbles
+            for(let i=1; i<=steps; i++) {
+                const bubble = document.getElementById(`bubble-${i}`);
+                if(i < currentStep) {
+                    bubble.classList.add('completed');
+                    bubble.classList.remove('active');
+                    bubble.innerHTML = '✓';
+                } else if (i === currentStep) {
+                    bubble.classList.add('active');
+                    bubble.classList.remove('completed');
+                    bubble.innerHTML = i;
+                } else {
+                    bubble.classList.remove('active', 'completed');
+                    bubble.innerHTML = i;
+                }
+            }
+
+            // Buttons State
+            if(currentStep === 1) prevBtn.style.visibility = 'hidden';
+            else prevBtn.style.visibility = 'visible';
+
+            if(currentStep === steps) {
+                nextBtn.innerHTML = '<i class="ph ph-check"></i> Publier l\'annonce';
+                nextBtn.style.backgroundColor = '#E9A145'; // Accent color for final action
+                nextBtn.style.color = '#0E3B43';
+            } else {
+                nextBtn.innerHTML = 'Suivant <i class="ph ph-arrow-right"></i>';
+                nextBtn.style.backgroundColor = '#0E3B43';
+                nextBtn.style.color = 'white';
+            }
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if(currentStep < steps) {
+                currentStep++;
+                updateStep();
+            } else {
+                alert('Annonce prête à être publiée ! (Simulation)');
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if(currentStep > 1) {
+                currentStep--;
+                updateStep();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Compte - KeurGui</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --bg: #F8FAFC;
+            --white: #FFFFFF;
+            --primary: #0E3B43;
+            --accent: #E9A145;
+            --text: #1E293B;
+            --text-light: #64748B;
+            --border: #E2E8F0;
+            --danger: #EF4444;
+            --success: #10B981;
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'General Sans', sans-serif; }
+        
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        /* --- LAYOUT CONTAINER --- */
+        .settings-container {
+            width: 100%;
+            max-width: 500px;
+            background: transparent;
+        }
+
+        h1 { font-family: 'Clash Display'; font-size: 1.8rem; margin-bottom: 1.5rem; color: var(--primary); }
+
+        /* --- PROFILE CARD --- */
+        .profile-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar-large {
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            background: #E0F2F5;
+            color: var(--primary);
+            font-size: 1.5rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .edit-btn {
+            position: absolute; top: 1.5rem; right: 1.5rem;
+            background: #F1F5F9; border: none; padding: 0.5rem 1rem; border-radius: 50px;
+            font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text);
+            transition: 0.2s;
+        }
+        .edit-btn:hover { background: #E2E8F0; }
+
+        .verified-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: #DCFCE7; color: #166534; font-size: 0.75rem; font-weight: 700;
+            padding: 2px 8px; border-radius: 50px; margin-top: 4px;
+        }
+
+        /* --- SECTIONS --- */
+        .section-title {
+            font-size: 0.9rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 0.8rem; padding-left: 0.5rem;
+        }
+
+        .settings-group {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .setting-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.2rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .setting-item:last-child { border-bottom: none; }
+        .setting-item:hover { background: #F8FAFC; }
+
+        .item-left { display: flex; align-items: center; gap: 1rem; }
+        .item-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .icon-wallet { background: #FFF7ED; color: #EA580C; }
+        .icon-bell { background: #EEF2FF; color: #4F46E5; }
+        .icon-lock { background: #F0FDF4; color: #166534; }
+        .icon-globe { background: #FDF4FF; color: #C026D3; }
+        .icon-support { background: #E0F2F5; color: var(--primary); }
+
+        .item-label { font-weight: 500; font-size: 1rem; }
+        .item-value { font-size: 0.9rem; color: var(--text-light); margin-right: 0.5rem; }
+
+        /* --- TOGGLE SWITCH --- */
+        .toggle-switch {
+            position: relative; width: 44px; height: 24px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        
+        .slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #CBD5E1;
+            transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* --- LOGOUT BUTTON --- */
+        .logout-btn {
+            width: 100%; padding: 1rem;
+            background: white; border: 1px solid #FECACA; color: var(--danger);
+            border-radius: 16px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            transition: 0.2s; margin-top: 1rem;
+        }
+        .logout-btn:hover { background: #FEF2F2; }
+
+        /* --- FOOTER VERSION --- */
+        .app-version { text-align: center; margin-top: 2rem; color: #94A3B8; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <div class="settings-container">
+        <h1>Paramètres</h1>
+
+        <!-- PROFILE SUMMARY -->
+        <div class="profile-card">
+            <div class="avatar-large">MD</div>
+            <div>
+                <h2 style="font-family:'Clash Display'; font-size:1.3rem;">Moussa Diop</h2>
+                <div style="font-size:0.9rem; color:var(--text-light);">moussa.diop@gmail.com</div>
+                <div class="verified-badge"><i class="ph ph-shield-check"></i> Identité Vérifiée</div>
+            </div>
+            <button class="edit-btn">Modifier</button>
+        </div>
+
+        <!-- SECTION 1: FINANCES -->
+        <div class="section-title">Finances & Paiements</div>
+        <div class="settings-group">
+            <div class="setting-item">
+                <div class="item-left">
+                    <div class="item-icon icon-wallet"><i class="ph ph-wallet"></i></div>
+                    <div>
+                        <div class="item-label">Compte Wave</div>
+                        <div style="font-size:0.8rem; color:#64748B;">Par défaut pour recevoir</div>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span class="item-value">77 842...</span>
+                    <i class="ph ph-caret-right" style="color:#CBD5E1;"></i>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="item-left">
+                    <div class="item-icon" style="background:#FFF0E6; color:#FF7900;"><i class="ph ph-circle-notch"></i></div> <!-- OM Color -->
+                    <div class="item-label">Orange Money</div>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span class="item-value" style="color:#94A3B8;">Non lié</span>
+                    <i class="ph ph-plus-circle" style="color:var(--primary);"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: APP SETTINGS -->
+        <div class="section-title">Préférences</div>
+        <div class="settings-group">
+            <div class="setting-item">
+                <div class="item-left">
+                    <div class="item-icon icon-bell"><i class="ph ph-bell"></i></div>
+                    <div class="item-label">Notifications Push</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="item-left">
+                    <div class="item-icon"><i class="ph ph-chat-text"></i></div>
+                    <div class="item-label">Rappels par SMS</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="item-left">
+                    <div class="item-icon icon-globe"><i class="ph ph-globe"></i></div>
+                    <div class="item-label">Langue</div>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span class="item-value">Français</span>
+                    <i class="ph ph-caret-right" style="color:#CBD5E1;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: SECURITY & SUPPORT -->
+        <div class="section-title">Support</div>
+        <div class="settings-group">
+            <div class="setting-item">
+                <div class="item-left">
+                    <div class="item-icon icon-lock"><i class="ph ph-lock-key"></i></div>
+                    <div class="item-label">Mot de passe & Sécurité</div>
+                </div>
+                <i class="ph ph-caret-right" style="color:#CBD5E1;"></i>
+            </div>
+            <div class="setting-item">
+                <div class="item-left">
+                    <div class="item-icon icon-support"><i class="ph ph-whatsapp-logo"></i></div>
+                    <div class="item-label">Support WhatsApp</div>
+                </div>
+                <i class="ph ph-arrow-square-out" style="color:#CBD5E1;"></i>
+            </div>
+            <div class="setting-item">
+                <div class="item-left">
+                    <div class="item-icon" style="background:#F1F5F9; color:#64748B;"><i class="ph ph-file-text"></i></div>
+                    <div class="item-label">Conditions Générales</div>
+                </div>
+                <i class="ph ph-caret-right" style="color:#CBD5E1;"></i>
+            </div>
+        </div>
+
+        <button class="logout-btn">
+            <i class="ph ph-sign-out"></i> Déconnexion
+        </button>
+
+        <div class="app-version">
+            KeurGui v1.0.2 • Fait avec ❤️ à Dakar
+        </div>
+    </div>
+
+</body>
+</html>

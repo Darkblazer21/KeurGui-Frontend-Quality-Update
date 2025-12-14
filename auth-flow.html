@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion & Sécurité - KeurGui</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --primary: #0E3B43;
+            --accent: #E9A145;
+            --bg: #F3F4F6;
+            --white: #FFFFFF;
+            --text: #1E293B;
+            --border: #E2E8F0;
+            --input-bg: #F8FAFC;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'General Sans', sans-serif; }
+        
+        body {
+            background-color: var(--primary);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: radial-gradient(circle at top right, #1A5F6A 0%, transparent 40%);
+        }
+
+        /* --- AUTH CARD --- */
+        .auth-container {
+            background: var(--white);
+            width: 100%;
+            max-width: 450px;
+            min-height: 600px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo { 
+            font-family: 'Clash Display'; font-weight: 700; font-size: 1.5rem; color: var(--primary); 
+            text-align: center; margin-bottom: 2rem;
+        }
+        .logo span { color: var(--accent); }
+
+        /* SCREENS TRANSITIONS */
+        .auth-screen {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            flex: 1;
+            animation: slideIn 0.4s ease forwards;
+        }
+        .auth-screen.active { display: flex; }
+
+        h2 { font-family: 'Clash Display'; font-size: 1.8rem; margin-bottom: 0.5rem; color: var(--primary); }
+        .subtitle { color: #64748B; margin-bottom: 2rem; line-height: 1.5; font-size: 0.95rem; }
+
+        /* --- INPUTS --- */
+        .phone-input-group {
+            display: flex;
+            background: var(--input-bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: 0.2s;
+        }
+        .phone-input-group:focus-within { border-color: var(--primary); }
+
+        .country-code {
+            background: #E2E8F0;
+            padding: 1rem;
+            display: flex; align-items: center; gap: 0.5rem;
+            font-weight: 600; font-size: 1rem; color: var(--text);
+        }
+        
+        .flag { width: 24px; height: 16px; border-radius: 2px; display: block; background: linear-gradient(90deg, #00853F 33%, #FDEF42 33%, #FDEF42 66%, #E31B23 66%); position: relative; }
+        .flag::after { content: '★'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00853F; font-size: 8px; } /* Senegal Flag Star Sim */
+
+        .input-field {
+            flex: 1; border: none; background: transparent; padding: 1rem; font-size: 1.1rem; outline: none; font-weight: 500; letter-spacing: 1px;
+        }
+
+        /* --- OTP INPUTS --- */
+        .otp-grid { display: flex; gap: 0.8rem; justify-content: center; margin-bottom: 1.5rem; }
+        .otp-digit {
+            width: 50px; height: 60px;
+            border: 2px solid var(--border); border-radius: 12px;
+            text-align: center; font-size: 1.5rem; font-weight: 700;
+            background: var(--input-bg); outline: none; transition: 0.2s;
+        }
+        .otp-digit:focus { border-color: var(--primary); transform: translateY(-3px); background: white; }
+
+        /* --- ROLE CARDS --- */
+        .role-card {
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 1rem;
+            display: flex; align-items: center; gap: 1rem;
+        }
+        .role-card:hover { border-color: #CBD5E1; background: #F8FAFC; }
+        
+        .role-card.selected { border-color: var(--primary); background: #F0FDF4; }
+        
+        .role-icon {
+            width: 50px; height: 50px; background: #E0F2F5; color: var(--primary);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+        }
+
+        /* --- KYC UPLOAD --- */
+        .id-upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            background: var(--input-bg);
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 1rem;
+        }
+        .id-upload-zone:hover { border-color: var(--primary); background: #E6FFFA; }
+
+        .scan-frame {
+            width: 100%; height: 150px; background: #CBD5E1; border-radius: 8px; margin-bottom: 1rem;
+            display: flex; align-items: center; justify-content: center; position: relative;
+        }
+        .corner { position: absolute; width: 20px; height: 20px; border: 3px solid var(--primary); }
+        .tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+        .tr { top: -2px; right: -2px; border-left: 0; border-bottom: 0; }
+        .bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; }
+        .br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+
+
+        /* --- BUTTONS --- */
+        .btn {
+            width: 100%; padding: 1rem; border-radius: 50px; font-weight: 600; cursor: pointer; border: none; font-size: 1rem;
+            margin-top: auto; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(14, 59, 67, 0.2); }
+        .btn-disabled { background: #CBD5E1; color: #64748B; cursor: not-allowed; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="logo">Keur<span>Gui</span>.</div>
+
+        <!-- SCREEN 1: PHONE INPUT -->
+        <div class="auth-screen active" id="screen-1">
+            <h2>Bienvenue 👋</h2>
+            <p class="subtitle">Entrez votre numéro de téléphone pour commencer. Nous vous enverrons un code sécurisé.</p>
+
+            <div class="phone-input-group">
+                <div class="country-code">
+                    <span class="flag"></span>
+                    <span>+221</span>
+                </div>
+                <input type="tel" class="input-field" placeholder="77 000 00 00" id="phoneInput">
+            </div>
+
+            <div style="margin-top: 1rem; font-size: 0.85rem; color: #64748B;">
+                En continuant, vous acceptez nos <a href="#" style="color:var(--primary);">CGU</a> et notre <a href="#" style="color:var(--primary);">Politique de Confidentialité</a>.
+            </div>
+
+            <button class="btn btn-primary" onclick="goToStep(2)">
+                Continuer <i class="ph ph-arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- SCREEN 2: OTP VERIFICATION -->
+        <div class="auth-screen" id="screen-2">
+            <button onclick="goToStep(1)" style="background:none; border:none; color:#64748B; cursor:pointer; align-self:flex-start; margin-bottom:1rem;">
+                <i class="ph ph-arrow-left"></i> Retour
+            </button>
+            <h2>Vérification</h2>
+            <p class="subtitle">Code envoyé au <strong style="color:var(--text);">+221 77 842 19 30</strong>. <br>Entrez le code à 4 chiffres.</p>
+
+            <div class="otp-grid">
+                <input type="text" maxlength="1" class="otp-digit" autofocus>
+                <input type="text" maxlength="1" class="otp-digit">
+                <input type="text" maxlength="1" class="otp-digit">
+                <input type="text" maxlength="1" class="otp-digit">
+            </div>
+
+            <p style="text-align: center; font-size: 0.9rem; color: #64748B;">
+                Vous n'avez rien reçu ? <a href="#" style="color:var(--primary); font-weight:600;">Renvoyer (30s)</a>
+            </p>
+
+            <button class="btn btn-primary" onclick="goToStep(3)">
+                Vérifier
+            </button>
+        </div>
+
+        <!-- SCREEN 3: ROLE SELECTION -->
+        <div class="auth-screen" id="screen-3">
+            <h2>Qui êtes-vous ?</h2>
+            <p class="subtitle">Sélectionnez votre profil principal pour personnaliser votre expérience.</p>
+
+            <div class="role-card" onclick="selectRole(this)">
+                <div class="role-icon"><i class="ph ph-house-line"></i></div>
+                <div>
+                    <h4 style="font-weight:700; font-size:1.1rem;">Je veux louer</h4>
+                    <p style="font-size:0.85rem; color:#64748B;">Je cherche un appartement ou une maison.</p>
+                </div>
+            </div>
+
+            <div class="role-card" onclick="selectRole(this)">
+                <div class="role-icon" style="background:#FFF7ED; color:#C2410C;"><i class="ph ph-key"></i></div>
+                <div>
+                    <h4 style="font-weight:700; font-size:1.1rem;">Je suis Propriétaire</h4>
+                    <p style="font-size:0.85rem; color:#64748B;">Je veux gérer mes biens et paiements.</p>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="roleBtn" onclick="goToStep(4)">
+                Suivant
+            </button>
+        </div>
+
+        <!-- SCREEN 4: KYC / ID UPLOAD -->
+        <div class="auth-screen" id="screen-4">
+            <h2>Identité (KYC)</h2>
+            <p class="subtitle">Pour garantir la sécurité sur KeurGui, veuillez scanner votre CNI ou Passeport.</p>
+
+            <div class="id-upload-zone">
+                <div class="scan-frame">
+                    <span class="corner tl"></span><span class="corner tr"></span>
+                    <span class="corner bl"></span><span class="corner br"></span>
+                    <i class="ph ph-camera" style="font-size: 2rem; color: #64748B;"></i>
+                </div>
+                <h4 style="font-size: 1rem; margin-bottom: 0.5rem;">Recto de la CNI</h4>
+                <p style="font-size: 0.8rem; color: #94A3B8;">Format JPG, PNG ou PDF</p>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                <i class="ph ph-shield-check" style="color: var(--primary); font-size: 1.2rem;"></i>
+                <p style="font-size: 0.8rem; color: #64748B; line-height: 1.4;">Vos données sont chiffrées et validées par un prestataire agréé. Elles ne seront jamais partagées.</p>
+            </div>
+
+            <button class="btn btn-primary" onclick="finishAuth()">
+                <i class="ph ph-check-circle"></i> Terminer l'inscription
+            </button>
+            <button style="background:none; border:none; margin-top:1rem; font-size:0.9rem; color:#64748B; cursor:pointer;" onclick="finishAuth()">Passer pour l'instant</button>
+        </div>
+
+    </div>
+
+    <!-- JS FOR FLUIDITY -->
+    <script>
+        function goToStep(step) {
+            document.querySelectorAll('.auth-screen').forEach(el => el.classList.remove('active'));
+            document.getElementById(`screen-${step}`).classList.add('active');
+        }
+
+        function selectRole(element) {
+            document.querySelectorAll('.role-card').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function finishAuth() {
+            alert("Inscription terminée ! Redirection vers le Dashboard...");
+            // Here we would redirect to dashboard.html
+        }
+
+        // Auto-focus next input for OTP
+        const otpInputs = document.querySelectorAll('.otp-digit');
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (input.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
